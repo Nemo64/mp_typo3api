@@ -25,6 +25,7 @@ class SelectRelationField extends AbstractField
             'foreign_table_where' => '',
             'required' => false,
             'items' => [],
+            'itemsProcFunc' => null,
             'dbType' => "INT(11) DEFAULT '0' NOT NULL",
             'localize' => false,
         ]);
@@ -32,6 +33,7 @@ class SelectRelationField extends AbstractField
         $resolver->setAllowedTypes('foreign_table', ['string', TableBuilderContext::class]);
         $resolver->setAllowedTypes('foreign_table_where', 'string');
         $resolver->setAllowedTypes('items', 'array');
+        $resolver->setAllowedTypes('itemsProcFunc', ['null', 'string']);
 
         /** @noinspection PhpUnusedParameterInspection */
         $resolver->setNormalizer('foreign_table', function (Options $options, $foreignTable) {
@@ -66,12 +68,18 @@ class SelectRelationField extends AbstractField
 
     public function getFieldTcaConfig(TcaBuilderContext $tcaBuilder)
     {
-        return [
+        $config = [
             'type' => 'select',
             'renderType' => 'selectSingle',
             'foreign_table' => $this->getOption('foreign_table'),
             'foreign_table_where' => $this->getOption('foreign_table_where'),
             'items' => $this->getOption('items'),
         ];
+
+        if ($this->getOption('itemsProcFunc') !== null) {
+            $config['itemsProcFunc'] = $this->getOption('itemsProcFunc');
+        }
+
+        return $config;
     }
 }
